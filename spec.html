@@ -22360,15 +22360,12 @@
   
           <emu-alg>
             1. Let _module_ be this Dynamic Module Record.
-            1. Let _hasExistingExportBinding_ be set to *false*.
-            1. For each string _e_ in _module_.[[ExportNames]], do
-              1. If _e_ is equal to _exportName_ then,
-                1. Set _hasExistingExportBinding_ to *true*.
-            1. If _hasExistingExportBinding_ is *false* then,
+            1. Let _exportNames_ be _module_.[[ExportNames]].
+            1. If _exportNames_ does not contain _exportName_ then,
               1. Let _envRec_ be the Module Environment Record _module_.[[Environment]]
               1. If _envRec_ does not already have a binding for _exportName_ then,
-                1. Perform _envRec_.CreateMutableBinding(_name_, *false*).
-              1. Add _exportName_ to the list _module_.[[ExportNames]].
+                1. Perform ! _envRec_.CreateMutableBinding(_name_, *false*).
+              1. Append _exportName_ to the end of _exportNames_.
             1. Return ResolvedBinding Record { [[Module]]: _module_, [[BindingName]]: _exportName_ }.
           </emu-alg>
         </emu-clause>
@@ -22409,7 +22406,7 @@
             1. Let _m_ be this Dynamic Module Record.
             1. Assert: _m_.[[Status]] is `"instantiated"` or `"evaluated"`.
             1. Set _m_.[[Status]] to `"evaluating"`.
-            1. Let _result_ be HostEvaluateDynamicModule(_m_, _m_.[[ExportedBindings]]).
+            1. Let _result_ be HostEvaluateDynamicModule(_m_).
             1. If _result_ is an abrupt completion, then
               1. Assert: _m_.[[Status]] is `"evaluating"`.
               1. Set _m_.[[Status]] to `"evaluated"`.
@@ -22426,8 +22423,9 @@
                   1. Set _m_.[[Status]] to `"evaluated"`.
                   1. Set _m_.[[EvaluationError]] to _error_.
                   1. Return _error_.
-                1. If _n_.[[Exports]] does not contain a value for _exportName_ then,
-                  1. Add _exportName_ to _n_.[[Exports]] at the position corresponding to the sort order of `Array.prototype.sort` with *undefined* as _comparefn_.
+                1. Let _namespaceExports_ be _n_.[[Exports]].
+                1. If _namespaceExports_ does not contain _exportName_ then,
+                  1. Insert _exportName_ in the list _namespaceExports_ at the position corresponding to the sort order of `Array.prototype.sort` with *undefined* as _comparefn_.
             1. Set _m_.[[Status]] to `"evaluated"`.
             1. Assert: _m_.[[EvaluationError]] is *undefined*.
             1. Return *undefined*.
@@ -22438,7 +22436,8 @@
           <h1>SetDynamicExportBinding ( _name_, _value_ ) Concrete Method</h1>
           <p>The SetDynamicExportBinding concrete method of a Dynamic Module Record implements the corresponding Module Record abstract method for a string _name_ and initialization value _value_.</p>
           <emu-alg>
-            1. Let _envRec_ be the module Environment Record for which the method was invoked.
+            1. Let _module_ be this Dynamic Module Record.
+            1. Let _envRec_ be the module Environment Record _module_.[[Environment]].
             1. If _envRec_ has a binding for _name_ then,
               1. If the binding for _name_ in _envRec_ has not been initialized then,
                 1. Perform _envRec_.InitializeBinding(_name_, _value_).
