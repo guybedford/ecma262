@@ -22384,9 +22384,9 @@
           <emu-alg>
             1. Let _module_ be this Dynamic Module Record.
             1. Assert: _module_.[[Status]] is not `"instantiating"` or `"evaluating"`.
-            1. Let realm be module.[[Realm]].
-            1. Assert: realm is not undefined.
-            1. Let env be NewModuleEnvironment(realm.[[GlobalEnv]]).
+            1. Let _realm_ be module.[[Realm]].
+            1. Assert: _realm_ is a valid Realm.
+            1. Let _env_ be NewModuleEnvironment(_realm_.[[GlobalEnv]]).
             1. Set _module_.[[Environment]] to _env_.
             1. Set _module_.[[Status]] to `"instantiated"`.
             1. Return *undefined*.
@@ -22427,8 +22427,7 @@
                   1. Set _m_.[[EvaluationError]] to _error_.
                   1. Return _error_.
                 1. If _n_.[[Exports]] does not contain a value for _exportName_ then,
-                  1. Let _exports_ be the new List containing the same values as _n_.[[Exports]] with _exportName_ added in sort order of `Array.prototype.sort` with *undefined* as _comparefn_.
-                  1. Set _M_.[[Exports]] to _exports_.
+                  1. Add _exportName_ to _n_.[[Exports]] at the position corresponding to the sort order of `Array.prototype.sort` with *undefined* as _comparefn_.
             1. Set _m_.[[Status]] to `"evaluated"`.
             1. Assert: _m_.[[EvaluationError]] is *undefined*.
             1. Return *undefined*.
@@ -22437,7 +22436,7 @@
 
         <emu-clause id="sec-setdynamicexportbinding">
           <h1>SetDynamicExportBinding ( _name_, _value_ ) Concrete Method</h1>
-          <p>The CreateDynamicExportBinding concrete method of a Dynamic Module Record implements the corresponding Module Record abstract method for a string _name_ and initialization value _value_.</p>
+          <p>The SetDynamicExportBinding concrete method of a Dynamic Module Record implements the corresponding Module Record abstract method for a string _name_ and initialization value _value_.</p>
           <emu-alg>
             1. Let _envRec_ be the module Environment Record for which the method was invoked.
             1. If _envRec_ has a binding for _name_ then,
