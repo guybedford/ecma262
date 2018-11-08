@@ -8452,6 +8452,17 @@
           </tr>
           <tr>
             <td>
+              [[HostDefined]]
+            </td>
+            <td>
+              Any, default value is *undefined*.
+            </td>
+            <td>
+              Field reserved for use by host environments that need to associate additional information with a Module Namespace Exotic Object.
+            </td>
+          </tr>
+          <tr>
+            <td>
               [[Prototype]]
             </td>
             <td>
@@ -8597,6 +8608,7 @@
           1. Set _M_.[[Module]] to _module_.
           1. Let _sortedExports_ be a new List containing the same values as the list _exports_ where the values are ordered as if an Array of the same values had been sorted using `Array.prototype.sort` using *undefined* as _comparefn_.
           1. Set _M_.[[Exports]] to _sortedExports_.
+          1. Set _M_.[[HostDefined]] to *undefined*.
           1. Create own properties of _M_ corresponding to the definitions in <emu-xref href="#sec-module-namespace-objects"></emu-xref>.
           1. Set _module_.[[Namespace]] to _M_.
           1. Return _M_.
@@ -22384,7 +22396,7 @@
           1. Return _namespace_.
         </emu-alg>
         <emu-note>
-          <p>The only ways GetModuleNamespace can throw is either via one of the triggered HostResolveImportedModule calls or if GetExportedNames throws for a specific module record implementation. Unresolvable names are simply excluded from the namespace at this point. They will lead to a real instantiation error later unless they are all ambiguous star exports that are not explicitly requested anywhere.</p>
+          <p>The only way GetModuleNamespace can throw is via one of the triggered HostResolveImportedModule calls. Unresolvable names are simply excluded from the namespace at this point. They will lead to a real instantiation error later unless they are all ambiguous star exports that are not explicitly requested anywhere.</p>
         </emu-note>
       </emu-clause>
 
