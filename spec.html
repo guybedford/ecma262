@@ -22392,7 +22392,7 @@
             1. Let _exportedNames_ be ? _module_.GetExportedNames(&laquo; &raquo;, _module_).
             1. Let _unambiguousNames_ be a new empty List.
             1. If _exportedNames_ is not *null*, then
-              1. For each _name_ that is an element of _exportedNames_, do
+              1. For each _name_ in _exportedNames_, do
                 1. Let _resolution_ be ? _module_.ResolveExport(_name_, &laquo; &raquo;).
                 1. If _resolution_ is a ResolvedBinding Record, append _name_ to _unambiguousNames_.
             1. Set _namespace_ to ModuleNamespaceCreate(_module_, _unambiguousNames_).
