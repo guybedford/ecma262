@@ -8444,7 +8444,7 @@
               [[Exports]]
             </td>
             <td>
-              List of String
+              List of String | *null*
             </td>
             <td>
               A List containing the String values of the exported names exposed as own properties of this object. The list is ordered as if an Array of those String values had been sorted using `Array.prototype.sort` using *undefined* as _comparefn_.
@@ -8489,6 +8489,8 @@
         <h1>[[IsExtensible]] ( )</h1>
         <p>When the [[IsExtensible]] internal method of a module namespace exotic object _O_ is called, the following steps are taken:</p>
         <emu-alg>
+          1. If _O_.[[Exports]] is *null*, then
+            1. Return *true*.
           1. Return *false*.
         </emu-alg>
       </emu-clause>
@@ -8497,6 +8499,8 @@
         <h1>[[PreventExtensions]] ( )</h1>
         <p>When the [[PreventExtensions]] internal method of a module namespace exotic object _O_ is called, the following steps are taken:</p>
         <emu-alg>
+          1. If _O_.[[Exports]] is *null*, then
+            1. Return *false*.
           1. Return *true*.
         </emu-alg>
       </emu-clause>
@@ -8517,7 +8521,9 @@
         <h1>[[DefineOwnProperty]] ( _P_, _Desc_ )</h1>
         <p>When the [[DefineOwnProperty]] internal method of a module namespace exotic object _O_ is called with property key _P_ and Property Descriptor _Desc_, the following steps are taken:</p>
         <emu-alg>
-          1. If Type(_P_) is Symbol, return OrdinaryDefineOwnProperty(_O_, _P_, _Desc_).
+          1. If Type(_P_) is Symbol, then
+            1. Let _current_ be ? _O_.[[GetOwnProperty]](_P_).
+            1. Return ValidateAndApplyPropertyDescriptor(_O_, _P_, *false*, _Desc_, _current_).
           1. Let _current_ be ? _O_.[[GetOwnProperty]](_P_).
           1. If _current_ is *undefined*, return *false*.
           1. If IsAccessorDescriptor(_Desc_) is *true*, return *false*.
@@ -8602,12 +8608,15 @@
         <emu-alg>
           1. Assert: _module_ is a Module Record.
           1. Assert: _module_.[[Namespace]] is *undefined*.
-          1. Assert: _exports_ is a List of String values.
+          1. Assert: _exports_ is a List of String values or *null*.
           1. Let _M_ be a newly created object.
           1. Set _M_'s essential internal methods to the definitions specified in <emu-xref href="#sec-module-namespace-exotic-objects"></emu-xref>.
           1. Set _M_.[[Module]] to _module_.
-          1. Let _sortedExports_ be a new List containing the same values as the list _exports_ where the values are ordered as if an Array of the same values had been sorted using `Array.prototype.sort` using *undefined* as _comparefn_.
-          1. Set _M_.[[Exports]] to _sortedExports_.
+          1. If _exports_ is *null*, then
+            1. Set _M_.[[Exports]] to *null*.
+          1. Otherwise,
+            1. Let _sortedExports_ be a new List containing the same values as the list _exports_ where the values are ordered as if an Array of the same values had been sorted using `Array.prototype.sort` using *undefined* as _comparefn_.
+            1. Set _M_.[[Exports]] to _sortedExports_.
           1. Set _M_.[[HostDefined]] to *undefined*.
           1. Create own properties of _M_ corresponding to the definitions in <emu-xref href="#sec-module-namespace-objects"></emu-xref>.
           1. Set _module_.[[Namespace]] to _M_.
@@ -22390,12 +22399,14 @@
           1. Let _namespace_ be _module_.[[Namespace]].
           1. If _namespace_ is *undefined*, then
             1. Let _exportedNames_ be ? _module_.GetExportedNames(&laquo; &raquo;, _module_).
-            1. Let _unambiguousNames_ be a new empty List.
-            1. If _exportedNames_ is not *null*, then
+            1. If _exportedNames_ is *null*, then
+              1. Set _namespace_ to ModuleNamespaceCreate(_module_, *null*).
+            1. Otherwise,
+              1. Let _unambiguousNames_ be a new empty List.
               1. For each _name_ in _exportedNames_, do
                 1. Let _resolution_ be ? _module_.ResolveExport(_name_, &laquo; &raquo;).
                 1. If _resolution_ is a ResolvedBinding Record, append _name_ to _unambiguousNames_.
-            1. Set _namespace_ to ModuleNamespaceCreate(_module_, _unambiguousNames_).
+              1. Set _namespace_ to ModuleNamespaceCreate(_module_, _unambiguousNames_).
           1. Return _namespace_.
         </emu-alg>
         <emu-note>
