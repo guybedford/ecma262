@@ -21424,7 +21424,7 @@
             </tr>
             <tr>
               <td>
-                GetExportedNames(_exportStarSet_, _nsModule_)
+                GetExportedNames(_exportStarSet_)
               </td>
               <td>
                 Return a list of all names that are either directly or indirectly exported from this module.
@@ -22016,12 +22016,11 @@
         </emu-clause>
 
         <emu-clause id="sec-getexportednames">
-          <h1>GetExportedNames ( _exportStarSet_, _nsModule_ ) Concrete Method</h1>
+          <h1>GetExportedNames ( _exportStarSet_ ) Concrete Method</h1>
           <p>The GetExportedNames concrete method of a Source Text Module Record implements the corresponding Module Record abstract method.</p>
           <p>It performs the following steps:</p>
           <emu-alg>
             1. Assert: _exportStarSet_ is a List of Module Records.
-            1. Assert: _nsModule_ is a Module Record.
             1. Let _module_ be this Source Text Module Record.
             1. If _exportStarSet_ contains _module_, then
               1. Assert: We've reached the starting point of an `import *` circularity.
@@ -22036,7 +22035,7 @@
               1. Append _e_.[[ExportName]] to _exportedNames_.
             1. For each ExportEntry Record _e_ in _module_.[[StarExportEntries]], do
               1. Let _requestedModule_ be ? HostResolveImportedModule(_module_, _e_.[[ModuleRequest]]).
-              1. Let _starNames_ be ? _requestedModule_.GetExportedNames(_exportStarSet_, _nsModule_).
+              1. Let _starNames_ be ? _requestedModule_.GetExportedNames(_exportStarSet_).
               1. If _starNames_ is *null*, then
                  1. Throw a *SyntaxError* exception.
               1. For each element _n_ of _starNames_, do
@@ -22389,7 +22388,7 @@
           1. Assert: _module_.[[Status]] is not `"uninstantiated"`.
           1. Let _namespace_ be _module_.[[Namespace]].
           1. If _namespace_ is *undefined*, then
-            1. Let _exportedNames_ be ? _module_.GetExportedNames(&laquo; &raquo;, _module_).
+            1. Let _exportedNames_ be ? _module_.GetExportedNames(&laquo; &raquo;).
             1. If _exportedNames_ is *null*, then
               1. Set _namespace_ to ModuleNamespaceCreate(_module_, *null*).
             1. Otherwise,
