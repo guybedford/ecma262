@@ -22049,7 +22049,7 @@
             <p>GetExportedNames does not filter out or throw an exception for names that have ambiguous star export bindings.</p>
           </emu-note>
           <emu-note>
-            <p>A *null* return from GetExportedNames indicates a non-Source-Text Module Record does not support star exports. This throws a corresponding SyntaxError exception.</p>
+            <p>Non-source text Module Records with deferred exports do not support star exports, and instead throw a corresponding SyntaxError exception.</p>
           </emu-note>
         </emu-clause>
 
@@ -22402,6 +22402,9 @@
         </emu-alg>
         <emu-note>
           <p>The only way GetModuleNamespace can throw is via one of the triggered HostResolveImportedModule calls. Unresolvable names are simply excluded from the namespace at this point. They will lead to a real instantiation error later unless they are all ambiguous star exports that are not explicitly requested anywhere.</p>
+        </emu-note>
+        <emu-note>
+          <p>A *null* return from GetExportedNames indicates a non-source text Module Record with deferred exports.</p>
         </emu-note>
       </emu-clause>
 
