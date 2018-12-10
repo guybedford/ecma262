@@ -22037,7 +22037,7 @@
               1. Let _requestedModule_ be ? HostResolveImportedModule(_module_, _e_.[[ModuleRequest]]).
               1. Let _starNames_ be ? _requestedModule_.GetExportedNames(_exportStarSet_).
               1. If _starNames_ is *null*, then
-                 1. Throw a *SyntaxError* exception.
+                1. Return *null*.
               1. For each element _n_ of _starNames_, do
                 1. If SameValue(_n_, `"default"`) is *false*, then
                   1. If _n_ is not an element of _exportedNames_, then
@@ -22045,10 +22045,7 @@
             1. Return _exportedNames_.
           </emu-alg>
           <emu-note>
-            <p>GetExportedNames does not filter out or throw an exception for names that have ambiguous star export bindings.</p>
-          </emu-note>
-          <emu-note>
-            <p>Non-source text Module Records with deferred exports do not support star exports, and instead throw a corresponding SyntaxError exception.</p>
+            <p>GetExportedNames does not filter out or throw an exception for names that have ambiguous star export bindings. It also doesn't throw for modules that star export from non-source text Module Records with deferred bindings.</p>
           </emu-note>
         </emu-clause>
 
@@ -22194,6 +22191,11 @@
                   1. Let _resolution_ be ? _importedModule_.ResolveExport(_in_.[[ImportName]], &laquo; &raquo;).
                   1. If _resolution_ is *null* or `"ambiguous"`, throw a *SyntaxError* exception.
                   1. Call _envRec_.CreateImportBinding(_in_.[[LocalName]], _resolution_.[[Module]], _resolution_.[[BindingName]]).
+              1. For each ExportEntry Record _e_ in _module_.[[StarExportEntries]], do
+                1. Let _requestedModule_ be ? HostResolveImportedModule(_module_, _e_.[[ModuleRequest]]).
+                1. Let _exportNames_ be ? _requestedModule_.GetExportedNames(_exportStarSet_).
+                1. If _exportNames_ is *null*, then
+                  1. Throw a *SyntaxError* exception.
               1. Let _code_ be _module_.[[ECMAScriptCode]].
               1. Let _varDeclarations_ be the VarScopedDeclarations of _code_.
               1. Let _declaredVarNames_ be a new empty List.
@@ -22215,6 +22217,9 @@
                     1. Call _envRec_.InitializeBinding(_dn_, _fo_).
               1. Return NormalCompletion(~empty~).
             </emu-alg>
+            <emu-note>
+              <p>A *null* return from GetExportedNames indicates a non-source text Module Record with deferred exports. Star exports from these modules are not supported and throw a Syntax Error.</p>
+            </emu-note>
           </emu-clause>
         </emu-clause>
 
@@ -22401,9 +22406,6 @@
         </emu-alg>
         <emu-note>
           <p>The only way GetModuleNamespace can throw is via one of the triggered HostResolveImportedModule calls. Unresolvable names are simply excluded from the namespace at this point. They will lead to a real instantiation error later unless they are all ambiguous star exports that are not explicitly requested anywhere.</p>
-        </emu-note>
-        <emu-note>
-          <p>A *null* return from GetExportedNames indicates a non-source text Module Record with deferred exports.</p>
         </emu-note>
       </emu-clause>
 
